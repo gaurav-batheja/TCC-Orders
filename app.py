@@ -112,7 +112,8 @@ def append_rows(rows):
 
     ws.append_rows(
         rows,
-        value_input_option="USER_ENTERED"
+        value_input_option="USER_ENTERED",
+        table_range="A1:N"
     )
 
 
