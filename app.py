@@ -30,9 +30,9 @@ DEFAULT_MENU = [
 ]
 
 USERS = {
-    "admin": "Gaurav",
-    "staff1": "Chandan",
-    "staff2": "Surya"
+    "Gaurav": "xfk24sge",
+    "Chandan": "123",
+    "Surya": "Surya"
 }
 
 OUTLETS = ["Shailendra Nagar", "MG Road"]
