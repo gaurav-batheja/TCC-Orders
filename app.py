@@ -4,6 +4,7 @@ import pandas as pd
 from datetime import datetime, date
 import gspread
 from google.oauth2.service_account import Credentials
+import os
 
 st.set_page_config(page_title="TCC Orders", page_icon="🧀", layout="wide")
 
@@ -57,16 +58,22 @@ def ensure_headers(ws):
     if existing != HEADERS:
         ws.update("A1:N1", [HEADERS])
 
+@st.cache_data(ttl=30)
 def load_orders():
     ws = get_gsheet()
     ensure_headers(ws)
+
     records = ws.get_all_records()
-    if not records:
+
+    if not records:#123
         return pd.DataFrame(columns=HEADERS)
+
     df = pd.DataFrame(records)
+
     for c in HEADERS:
         if c not in df.columns:
             df[c] = ""
+
     return df[HEADERS]
 
 def append_rows(rows):
@@ -106,18 +113,23 @@ def next_order_id(selected_date, df):
     n = max(nums, default=0) + 1
     return f"{prefix}{n:03d}"
 
+@st.cache_data(ttl=300)
 def menu_df():
     try:
         ws = get_gsheet()
         mws = ws.spreadsheet.worksheet("Menu")
         data = mws.get_all_records()
+
         if data:
             m = pd.DataFrame(data)
-            required = {"Item ID","Item","Unit Price"}
+            required = {"Item ID", "Item", "Unit Price"}
+
             if required.issubset(m.columns):
-                return m[["Item ID","Item","Unit Price"]]
+                return m[["Item ID", "Item", "Unit Price"]]
+
     except Exception:
         pass
+
     return pd.DataFrame(DEFAULT_MENU)
 
 # ---------------- LOGIN ----------------
@@ -246,10 +258,14 @@ if page == "New Order":
                     item["Qty"], item["Unit Price"], row_discount, reason,
                     payment, net, user, shift_for_time(now)
                 ])
-            append_rows(rows)
-            st.session_state.cart = []
-            st.success(f"Order {order_id} saved successfully.")
-            st.rerun()
+                append_rows(rows)
+
+                # Clear cached Google Sheet data so the new order appears immediately
+                load_orders.clear()
+
+                st.session_state.cart = []
+                st.success(f"Order {order_id} saved successfully.")
+                st.rerun()
     else:
         st.info("Add at least one item.")
 
