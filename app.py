@@ -191,29 +191,88 @@ if page == "New Order":
         else:
             reason = st.text_input("Discount Reason")
 
-    st.subheader("Items")
+st.subheader("Items")
 
-    if "cart" not in st.session_state:
-        st.session_state.cart = []
+if "cart" not in st.session_state:
+    st.session_state.cart = []
 
-    items_by_label = {
-        f"{r['Item ID']} — {r['Item']} — ₹{float(r['Unit Price']):g}": r
-        for _, r in menu.iterrows()
-    }
+items_by_label = {
+    f"{r['Item ID']} — {r['Item']} — ₹{float(r['Unit Price']):g}": r
+    for _, r in menu.iterrows()
+}
 
-    # Existing cart
+# -------------------------
+# ADD NEW ITEM
+# -------------------------
+with st.form("add_item", clear_on_submit=True):
+    c1, c2 = st.columns([4, 1])
+
+    with c1:
+        label = st.selectbox(
+            "+ Add Order Item",
+            ["Select item"] + list(items_by_label.keys())
+        )
+
+    with c2:
+        qty = st.number_input(
+            "Qty",
+            min_value=1,
+            value=1,
+            step=1
+        )
+
+    add = st.form_submit_button(
+        "Add Item",
+        use_container_width=True
+    )
+
+    if add:
+        if label == "Select item":
+            st.warning("Select an item first.")
+        else:
+            r = items_by_label[label]
+
+            st.session_state.cart.append({
+                "Item ID": str(r["Item ID"]),
+                "Item": str(r["Item"]),
+                "Unit Price": float(r["Unit Price"]),
+                "Qty": int(qty)
+            })
+
+            st.rerun()
+
+
+# -------------------------
+# CURRENT CART
+# -------------------------
+if st.session_state.cart:
+    st.write("### Current Order")
+
     remove_idx = None
+
     for i, item in enumerate(st.session_state.cart):
-        a,b,c,d = st.columns([4,1.5,1.5,0.8])
+        a, b, c, d = st.columns([4, 1.5, 1.5, 0.8])
+
         with a:
-            st.write(f"**{item['Item ID']} — {item['Item']}**")
+            st.write(
+                f"**{item['Item ID']} — {item['Item']}**"
+            )
+
         with b:
             st.write(f"₹{item['Unit Price']:g}")
+
         with c:
-            qty = st.number_input("Qty", min_value=1, step=1, value=item["Qty"], key=f"qty_{i}")
-            item["Qty"] = int(qty)
+            new_qty = st.number_input(
+                "Qty",
+                min_value=1,
+                step=1,
+                value=item["Qty"],
+                key=f"cart_qty_{i}_{item['Item ID']}"
+            )
+            item["Qty"] = int(new_qty)
+
         with d:
-            if st.button("✕", key=f"remove_{i}"):
+            if st.button("✕", key=f"remove_cart_{i}"):
                 remove_idx = i
 
     if remove_idx is not None:
