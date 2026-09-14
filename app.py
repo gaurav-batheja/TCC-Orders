@@ -221,19 +221,40 @@ if page == "New Order":
         st.rerun()
 
     with st.form("add_item", clear_on_submit=True):
-        label = st.selectbox("+ Add Order Item", ["Select item"] + list(items_by_label.keys()))
-        add = st.form_submit_button("Add Item", use_container_width=True)
+        c1, c2 = st.columns([4, 1])
+
+        with c1:
+            label = st.selectbox(
+                "+ Add Order Item",
+                ["Select item"] + list(items_by_label.keys())
+            )
+
+        with c2:
+            qty = st.number_input(
+                "Qty",
+                min_value=1,
+                value=1,
+                step=1
+            )
+
+        add = st.form_submit_button(
+            "Add Item",
+            use_container_width=True
+        )
+
         if add:
             if label == "Select item":
                 st.warning("Select an item first.")
             else:
                 r = items_by_label[label]
+
                 st.session_state.cart.append({
                     "Item ID": str(r["Item ID"]),
                     "Item": str(r["Item"]),
                     "Unit Price": float(r["Unit Price"]),
-                    "Qty": 1
+                    "Qty": int(qty)
                 })
+
                 st.rerun()
 
     subtotal = sum(x["Unit Price"] * x["Qty"] for x in st.session_state.cart)
