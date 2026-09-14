@@ -356,7 +356,7 @@ if page == "New Order":
 
     reason = ""
 
-    if discount > 0:
+    if discount_percent > 0:
 
         if channel == "Zomato":
 
