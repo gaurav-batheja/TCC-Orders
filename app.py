@@ -382,13 +382,36 @@ if page == "New Order":
         st.session_state.cart = []
 
 
-    items_by_label = {
+    items_by_label = {}
 
-        f"{r['Item ID']} — {r['Item']} — ₹{float(r['Unit Price']):g}": r
+    for _, r in menu.iterrows():
 
-        for _, r in menu.iterrows()
+        if (
+            pd.isna(r["Item ID"])
+            or str(r["Item ID"]).strip() == ""
+            or pd.isna(r["Item"])
+            or str(r["Item"]).strip() == ""
+            or pd.isna(r["Unit Price"])
+            or str(r["Unit Price"]).strip() == ""
+        ):
+            continue
 
-    }
+        try:
+            price = float(r["Unit Price"])
+        except (ValueError, TypeError):
+            continue
+
+        label = (
+            f"{r['Item ID']} — "
+            f"{r['Item']} — "
+            f"₹{price:g}"
+        )
+
+        items_by_label[label] = {
+            "Item ID": r["Item ID"],
+            "Item": r["Item"],
+            "Unit Price": price
+        }
 
 
     # ---------------- ADD ITEM ----------------
