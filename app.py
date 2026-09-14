@@ -345,9 +345,10 @@ if page == "New Order":
 
     with c5:
 
-        discount = st.number_input(
-            "Order Discount",
+        discount_percent = st.number_input(
+            "Discount (%)",
             min_value=0.0,
+            max_value=100.0,
             value=0.0,
             step=1.0
         )
@@ -531,14 +532,12 @@ if page == "New Order":
 
 
         # ---------------- TOTAL ----------------
-
         subtotal = sum(
-
             x["Unit Price"] * x["Qty"]
-
             for x in st.session_state.cart
-
         )
+
+        discount = subtotal * discount_percent / 100
 
         net_total = max(
             0,
