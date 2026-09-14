@@ -204,7 +204,7 @@ items_by_label = {
 # -------------------------
 # ADD NEW ITEM
 # -------------------------
-with st.form("add_item", clear_on_submit=True):
+with st.form("add_order_item_form", clear_on_submit=True):
     c1, c2 = st.columns([4, 1])
 
     with c1:
@@ -279,8 +279,8 @@ if st.session_state.cart:
         st.session_state.cart.pop(remove_idx)
         st.rerun()
 
-    with st.form("add_item", clear_on_submit=True):
-        c1, c2 = st.columns([4, 1])
+    # with st.form("add_item", clear_on_submit=True):
+    #     c1, c2 = st.columns([4, 1])
 
         with c1:
             label = st.selectbox(
