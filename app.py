@@ -537,13 +537,14 @@ if page == "New Order":
             for x in st.session_state.cart
         )
 
-        discount = subtotal * discount_percent / 100
+        discount = round(
+            subtotal * discount_percent / 100
+        )
 
         net_total = max(
             0,
             subtotal - discount
         )
-
 
         st.metric(
             "Order Total",
