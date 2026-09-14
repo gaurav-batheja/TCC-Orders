@@ -110,10 +110,21 @@ def append_rows(rows):
 
     ensure_headers(ws)
 
-    ws.append_rows(
+    # Find the last row containing actual data
+    existing_values = ws.get_all_values()
+
+    if not existing_values:
+        next_row = 2
+    else:
+        last_row = len(existing_values)
+        next_row = last_row + 1
+
+    end_row = next_row + len(rows) - 1
+
+    ws.update(
+        f"A{next_row}:N{end_row}",
         rows,
-        value_input_option="USER_ENTERED",
-        table_range="A1:N"
+        value_input_option="USER_ENTERED"
     )
 
 
