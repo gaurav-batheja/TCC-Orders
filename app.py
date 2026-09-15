@@ -164,10 +164,10 @@ def shift_for_time(dt):
         t >= datetime.strptime("14:00", "%H:%M").time()
         and t < datetime.strptime("18:00", "%H:%M").time()
     ):
-        return "Evening"
+        return "Lunch"
 
-    if t >= datetime.strptime("18:00", "%H:%M").time():
-        return "Night"
+    if t >= datetime.strptime("18:00", "%H:%M").time() and t <= datetime.strptime("23:59", "%H:%M").time():
+        return "Evening"
 
     return "Night"
 
